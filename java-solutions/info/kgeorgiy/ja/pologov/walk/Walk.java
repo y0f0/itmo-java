@@ -60,6 +60,7 @@ public class Walk {
                     byte[] bytes = Files.readAllBytes(Path.of(path));
                     String hash = hash(bytes);
                     writeHash(writer, path, hash);
+                    // :NOTE: Exception
                 } catch (Exception e) {
                     writeHash(writer, path, String.join("", Collections.nCopies(40, "0")));
                 }
@@ -71,8 +72,10 @@ public class Walk {
 
     private static void writeHash(BufferedWriter writer, String path, String hash) {
         try {
-            writer.write(hash + " " + path + '\n');
+            writer.write(hash + " " + path);
+            writer.newLine();
         } catch (IOException e) {
+            // :NOTE: Описать, что случилось
             e.printStackTrace();
         }
     }
