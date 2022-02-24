@@ -17,24 +17,11 @@ public class ArraySet<E> extends AbstractSet<E> implements SortedSet<E> {
     }
 
     public ArraySet(Collection<E> collection, Comparator<? super E> comparator) {
+        // :fixed: использовать TreeSet
         this.comparator = comparator;
-        this.data = new ArrayList<>(collection);
-        // :NOTE: использовать TreeSet
-        data.sort(comparator);
-        if (!data.isEmpty()) {
-            List<E> uniqueData = new ArrayList<>();
-            uniqueData.add(data.get(0));
-            for (int i = 1; i < data.size(); i++) {
-                E currentData = data.get(i);
-                E lastUniqueData = uniqueData.get(uniqueData.size() - 1);
-                if (comparator != null && comparator.compare(currentData, lastUniqueData) != 0) {
-                    uniqueData.add(currentData);
-                } else if (comparator == null && currentData != lastUniqueData) {
-                    uniqueData.add(currentData);
-                }
-            }
-            data = uniqueData;
-        }
+        TreeSet<E> tmp = new TreeSet<>(comparator);
+        tmp.addAll(collection);
+        data = new ArrayList<>(tmp);
     }
 
     public ArraySet(Collection<E> collection) {
