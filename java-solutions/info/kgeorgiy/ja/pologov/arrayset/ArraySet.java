@@ -4,7 +4,7 @@ import java.util.*;
 
 // :fixed: "удалить" методы add, remove
 public class ArraySet<E> extends AbstractSet<E> implements SortedSet<E> {
-    private List<E> data;
+    private final List<E> data;
     private final Comparator<? super E> comparator;
 
     public ArraySet(List<E> data, Comparator<? super E> comparator) {
