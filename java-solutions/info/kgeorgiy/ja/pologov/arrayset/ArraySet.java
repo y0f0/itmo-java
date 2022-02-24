@@ -2,6 +2,7 @@ package info.kgeorgiy.ja.pologov.arrayset;
 
 import java.util.*;
 
+// :NOTE: "удалить" методы add, remove
 public class ArraySet<E> extends AbstractSet<E> implements SortedSet<E> {
     private List<E> data;
     private final Comparator<? super E> comparator;
@@ -18,6 +19,7 @@ public class ArraySet<E> extends AbstractSet<E> implements SortedSet<E> {
     public ArraySet(Collection<E> collection, Comparator<? super E> comparator) {
         this.comparator = comparator;
         this.data = new ArrayList<>(collection);
+        // :NOTE: использовать TreeSet
         data.sort(comparator);
         if (!data.isEmpty()) {
             List<E> uniqueData = new ArrayList<>();
