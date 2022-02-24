@@ -2,7 +2,7 @@ package info.kgeorgiy.ja.pologov.arrayset;
 
 import java.util.*;
 
-// :NOTE: "удалить" методы add, remove
+// :fixed: "удалить" методы add, remove
 public class ArraySet<E> extends AbstractSet<E> implements SortedSet<E> {
     private List<E> data;
     private final Comparator<? super E> comparator;
@@ -123,5 +123,20 @@ public class ArraySet<E> extends AbstractSet<E> implements SortedSet<E> {
     @SuppressWarnings("unchecked")
     public boolean contains(Object o) {
         return Collections.binarySearch(data,  (E) o, comparator) >= 0;
+    }
+
+    @Override
+    public boolean add(E e) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException();
     }
 }
