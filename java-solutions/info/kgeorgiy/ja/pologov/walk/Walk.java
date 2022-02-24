@@ -1,16 +1,12 @@
 package info.kgeorgiy.ja.pologov.walk;
 
 import java.io.*;
-import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
-import java.util.Formatter;
 
 public class Walk {
     public static void main(String[] args) {
@@ -79,8 +75,6 @@ public class Walk {
         for (byte b : bytes) {
             int value = b & 0xFF;
             if (value < 16) {
-                // if value less than 16, then it's hex String will be only
-                // one character, so we need to append a character of '0'
                 sb.append("0");
             }
             sb.append(Integer.toHexString(value));
