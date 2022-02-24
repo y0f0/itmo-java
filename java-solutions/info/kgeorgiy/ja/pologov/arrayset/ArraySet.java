@@ -4,7 +4,7 @@ import java.util.*;
 
 public class ArraySet<E> extends AbstractSet<E> implements SortedSet<E> {
     private List<E> data;
-    private Comparator<? super E> comparator;
+    private final Comparator<? super E> comparator;
 
     public ArraySet(List<E> data, Comparator<? super E> comparator) {
         this.data = data;
@@ -54,17 +54,17 @@ public class ArraySet<E> extends AbstractSet<E> implements SortedSet<E> {
     }
 
     @Override
-    public Comparator comparator() {
+    public Comparator<? super E> comparator() {
         return comparator;
     }
 
     @Override
-    public SortedSet subSet(E fromElement, E toElement) {
+    public SortedSet<E> subSet(E fromElement, E toElement) {
         boolean check;
         if (comparator != null) {
             check = comparator.compare(fromElement, toElement) > 0;
         } else {
-            check = ((Comparable<E>) fromElement).compareTo(toElement) > 0;
+            check = fromElement == toElement;
         }
         if (check) {
             throw new IllegalArgumentException("fromElement > subset");
@@ -83,8 +83,8 @@ public class ArraySet<E> extends AbstractSet<E> implements SortedSet<E> {
     }
 
     @Override
-    public SortedSet headSet(Object toElement) {
-        int end = Collections.binarySearch(data, (E) toElement, comparator);
+    public SortedSet<E> headSet(Object toElement) {
+        @SuppressWarnings("unchecked") int end = Collections.binarySearch(data, (E) toElement, comparator);
         if (end < 0) {
             end = -end - 1;
         }
@@ -94,8 +94,8 @@ public class ArraySet<E> extends AbstractSet<E> implements SortedSet<E> {
     }
 
     @Override
-    public SortedSet tailSet(Object fromElement) {
-        int begin = Collections.binarySearch(data, (E) fromElement, comparator);
+    public SortedSet<E> tailSet(Object fromElement) {
+        @SuppressWarnings("unchecked") int begin = Collections.binarySearch(data, (E) fromElement, comparator);
         if (begin < 0) {
             begin = -begin - 1;
         }
@@ -118,7 +118,8 @@ public class ArraySet<E> extends AbstractSet<E> implements SortedSet<E> {
         return data.get(data.size() - 1);
     }
 
+    @SuppressWarnings("unchecked")
     public boolean contains(Object o) {
-        return Collections.binarySearch(data, (E) o, comparator) >= 0;
+        return Collections.binarySearch(data,  (E) o, comparator) >= 0;
     }
 }
