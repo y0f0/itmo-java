@@ -5,9 +5,12 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
+import java.util.Formatter;
 
 public class Walk {
     public static void main(String[] args) {
@@ -56,36 +59,42 @@ public class Walk {
         ) {
             String path;
             while ((path = reader.readLine()) != null) {
-                try {
-                    byte[] bytes = Files.readAllBytes(Path.of(path));
-                    String hash = hash(bytes);
-                    writeHash(writer, path, hash);
-                    // :NOTE: Exception
-                } catch (Exception e) {
-                    writeHash(writer, path, String.join("", Collections.nCopies(40, "0")));
+                MessageDigest digest = MessageDigest.getInstance("SHA-1");
+                try (InputStream inputStream = new DigestInputStream(new FileInputStream(path), digest)) {
+                    byte[] bytes = new byte[1024];
+                    while (inputStream.read(bytes) > 0);
+                    //:fixed: Exception
+                    writeHash(writer, path, bytesToHexString(digest.digest()));
+                } catch (IOException e) {
+                    writeHash(writer, path, "0000000000000000000000000000000000000000");
                 }
             }
-        } catch (SecurityException | IOException e) {
+        } catch (SecurityException | IOException | NoSuchAlgorithmException e) {
             throw new WalkException("Error: can't open input/output file");
         }
     }
 
-    private static void writeHash(BufferedWriter writer, String path, String hash) {
+    public static String bytesToHexString(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            int value = b & 0xFF;
+            if (value < 16) {
+                // if value less than 16, then it's hex String will be only
+                // one character, so we need to append a character of '0'
+                sb.append("0");
+            }
+            sb.append(Integer.toHexString(value));
+        }
+        return sb.toString();
+    }
+
+    private static void writeHash(BufferedWriter writer, String path, String hash) throws WalkException {
         try {
             writer.write(hash + " " + path);
             writer.newLine();
         } catch (IOException e) {
             // :NOTE: Описать, что случилось
-            e.printStackTrace();
-        }
-    }
-
-    private static String hash(final byte[] bytes) {
-        try {
-            final byte[] hash = MessageDigest.getInstance("SHA-1").digest(bytes);
-            return String.format("%0" + (hash.length << 1) + "x", new BigInteger(1, hash));
-        } catch (final NoSuchAlgorithmException e) {
-            throw new AssertionError("Digest error: " + e.getMessage(), e);
+            throw new WalkException("can't write output file");
         }
     }
 }
