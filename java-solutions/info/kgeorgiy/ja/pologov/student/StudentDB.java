@@ -8,7 +8,6 @@ import info.kgeorgiy.java.advanced.student.StudentQuery;
 import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class StudentDB implements StudentQuery {
