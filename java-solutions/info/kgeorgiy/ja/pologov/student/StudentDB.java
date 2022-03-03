@@ -73,10 +73,10 @@ public class StudentDB implements StudentQuery {
                 .collect(Collectors.toList());
     }
 
-    private <T> List<Student> findStudentsByField(final Collection<Student> students, T parameter,
-                                                  Function<Student, T> function) {
+    private <T> List<Student> findStudentsByField(final Collection<Student> students, T field,
+                                                  Function<Student, T> method) {
         return students.stream()
-                .filter(student -> function.apply(student).equals(parameter))
+                .filter(student -> method.apply(student).equals(field))
                 .sorted(comparator)
                 .collect(Collectors.toList());
     }
