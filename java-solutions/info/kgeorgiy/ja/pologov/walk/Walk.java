@@ -73,7 +73,6 @@ public class Walk {
                         writeHash(writer, pathStr, "0000000000000000000000000000000000000000");
                     }
                 }
-
             }
         } catch (WalkException | SecurityException | IOException | NoSuchAlgorithmException e) {
             throw new WalkException("Error: can't open input/output file");
