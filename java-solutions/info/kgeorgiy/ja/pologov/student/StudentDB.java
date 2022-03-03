@@ -81,7 +81,7 @@ public class StudentDB implements StudentQuery {
                 .collect(Collectors.toList());
     }
 
-    // :NOTE: Дубли
+    // :fixed: Дубли
     @Override
     public List<Student> findStudentsByFirstName(final Collection<Student> students, final String name) {
         return findStudentsByField(students, name, Student::getFirstName);
