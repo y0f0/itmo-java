@@ -15,8 +15,8 @@ public class StudentDB implements StudentQuery {
     private final Comparator<Student> comparator = Comparator
             .comparing(Student::getLastName)
             .thenComparing(Student::getFirstName)
-            // :NOTE: Упростить
-            .thenComparing((Student s1, Student s2) -> Integer.compare(s2.getId(), s1.getId()))
+            // :fixed: Упростить
+            .thenComparing(Comparator.comparingInt(Student::getId).reversed())
             .reversed();
 
     private <T> List<T> getStudentsField(final Collection<Student> students, final Function<Student, T> getter) {
@@ -73,9 +73,10 @@ public class StudentDB implements StudentQuery {
                 .collect(Collectors.toList());
     }
 
-    private List<Student> findStudentsByField(final Collection<Student> students, final Predicate<Student> predicate) {
+    private <T> List<Student> findStudentsByField(final Collection<Student> students, T parameter,
+                                                  Function<Student, T> function) {
         return students.stream()
-                .filter(predicate)
+                .filter(student -> function.apply(student).equals(parameter))
                 .sorted(comparator)
                 .collect(Collectors.toList());
     }
@@ -83,17 +84,17 @@ public class StudentDB implements StudentQuery {
     // :NOTE: Дубли
     @Override
     public List<Student> findStudentsByFirstName(final Collection<Student> students, final String name) {
-        return findStudentsByField(students, student -> student.getFirstName().equals(name));
+        return findStudentsByField(students, name, Student::getFirstName);
     }
 
     @Override
     public List<Student> findStudentsByLastName(final Collection<Student> students, final String name) {
-        return findStudentsByField(students, student -> student.getLastName().equals(name));
+        return findStudentsByField(students, name, Student::getLastName);
     }
 
     @Override
     public List<Student> findStudentsByGroup(final Collection<Student> students, final GroupName group) {
-        return findStudentsByField(students, student -> student.getGroup().equals(group));
+        return findStudentsByField(students, group, Student::getGroup);
     }
 
     @Override
