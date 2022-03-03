@@ -35,7 +35,7 @@ public class Walk {
             throw new WalkException("Error: invalid input file path");
         }
         try {
-            outputPath = Path.of(input);
+            outputPath = Path.of(output);
         } catch (InvalidPathException e) {
             throw new WalkException("Error: invalid output file path");
         }
@@ -50,20 +50,30 @@ public class Walk {
             }
         }
         try (
-                BufferedReader reader = new BufferedReader(new FileReader(input));
-                BufferedWriter writer = new BufferedWriter(new FileWriter(output))
+                BufferedReader reader = Files.newBufferedReader(inputPath);
+                BufferedWriter writer = Files.newBufferedWriter(outputPath)
         ) {
-            String path;
-            while ((path = reader.readLine()) != null) {
+            String pathStr;
+            while ((pathStr = reader.readLine()) != null) {
                 MessageDigest digest = MessageDigest.getInstance("SHA-1");
-                try (InputStream inputStream = new DigestInputStream(new FileInputStream(path), digest)) {
-                    byte[] bytes = new byte[1024];
-                    while (inputStream.read(bytes) > 0);
-                    //:fixed: Exception
-                    writeHash(writer, path, bytesToHexString(digest.digest()));
-                } catch (IOException e) {
-                    writeHash(writer, path, "0000000000000000000000000000000000000000");
+                Path path = null;
+                try {
+                    path = Path.of(pathStr);
+                } catch (InvalidPathException e) {
+                    writeHash(writer, pathStr, "0000000000000000000000000000000000000000");
                 }
+
+                if (path != null) {
+                    try (InputStream inputStream = new DigestInputStream(Files.newInputStream(path), digest)) {
+                        byte[] bytes = new byte[1024];
+                        while (inputStream.read(bytes) > 0) ;
+                        //:fixed: Exception
+                        writeHash(writer, pathStr, bytesToHexString(digest.digest()));
+                    } catch (IOException e) {
+                        writeHash(writer, pathStr, "0000000000000000000000000000000000000000");
+                    }
+                }
+
             }
         } catch (WalkException | SecurityException | IOException | NoSuchAlgorithmException e) {
             throw new WalkException("Error: can't open input/output file");
