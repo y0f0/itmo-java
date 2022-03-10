@@ -14,11 +14,10 @@ public class StudentDB implements StudentQuery {
     private final Comparator<Student> comparator = Comparator
             .comparing(Student::getLastName)
             .thenComparing(Student::getFirstName)
-            // :fixed: Упростить
-            .thenComparing(Comparator.comparingInt(Student::getId).reversed())
-            .reversed();
+            .reversed()
+            .thenComparingInt(Student::getId);
 
-    private <T> List<T> getStudentsField(final Collection<Student> students, final Function<Student, T> getter) {
+    private static <T> List<T> getStudentsField(final Collection<Student> students, final Function<Student, T> getter) {
         return students.stream()
                 .map(getter)
                 .collect(Collectors.toList());
