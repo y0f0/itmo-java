@@ -66,7 +66,7 @@ public class Walk {
                 if (path != null) {
                     try (InputStream inputStream = new DigestInputStream(Files.newInputStream(path), digest)) {
                         byte[] bytes = new byte[1024];
-                        while (inputStream.read(bytes) > 0) ;
+                        while (inputStream.read(bytes) > 0);
                         //:fixed: Exception
                         writeHash(writer, pathStr, bytesToHexString(digest.digest()));
                     } catch (IOException e) {
@@ -96,7 +96,7 @@ public class Walk {
             writer.write(hash + " " + path);
             writer.newLine();
         } catch (IOException e) {
-            // :NOTE: Описать, что случилось
+            // :fixed: Описать, что случилось
             throw new WalkException("can't write output file");
         }
     }
