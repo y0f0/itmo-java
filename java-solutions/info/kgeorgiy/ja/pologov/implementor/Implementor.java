@@ -49,6 +49,7 @@ public class Implementor implements Impler {
         Path path = Path.of(
                 root + File.separator + token.getPackage().getName().replace(".", File.separator)
                         + File.separator + token.getSimpleName() + "Impl.java");
+        // :NOTE: getParentFile() can return null
         boolean ignored = path.toFile().getParentFile().mkdirs();
 
 
@@ -88,11 +89,13 @@ public class Implementor implements Impler {
     }
 
     private String generateMethodDefinition(Method method) {
+        // :NOTE: private return type and method params
         return String.join(
                 " ",
                 Modifier.toString(validateModifies(method.getModifiers())),
                 method.getReturnType().getTypeName(),
                 method.getName() + "(" + getMethodsParams(method) + ")",
+                // :NOTE: add exceptions
                 "{"
         );
     }
