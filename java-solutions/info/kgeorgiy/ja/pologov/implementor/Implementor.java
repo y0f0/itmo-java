@@ -49,9 +49,14 @@ public class Implementor implements Impler {
         Path path = Path.of(
                 root + File.separator + token.getPackage().getName().replace(".", File.separator)
                         + File.separator + token.getSimpleName() + "Impl.java");
-        // :NOTE: getParentFile() can return null
-        boolean ignored = path.toFile().getParentFile().mkdirs();
-
+        // :fixed: getParentFile() can return null
+        if (path.getParent() != null) {
+            try {
+                Files.createDirectories(path.getParent());
+            } catch (IOException e) {
+                throw new ImplerException(e.toString());
+            }
+        }
 
         try (final BufferedWriter bufferedWriter = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
             bufferedWriter.write(generateCode(token));
