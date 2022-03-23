@@ -100,9 +100,20 @@ public class Implementor implements Impler {
                 Modifier.toString(validateModifies(method.getModifiers())),
                 method.getReturnType().getTypeName(),
                 method.getName() + "(" + getMethodsParams(method) + ")",
-                // :NOTE: add exceptions
+                // :fixed: add exceptions
+                generateThrows(method),
                 "{"
         );
+    }
+
+    private String generateThrows(Method method) {
+        if (method.getExceptionTypes().length == 0) {
+            return "";
+        }
+        return "throws " +
+                Arrays.stream(method.getExceptionTypes())
+                .map(Class::getCanonicalName)
+                .collect(Collectors.joining(", "));
     }
 
     private int validateModifies(int modifiers) {
