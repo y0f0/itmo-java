@@ -85,6 +85,10 @@ public class Implementor implements Impler {
     }
 
     private String generateMethod(Method method) {
+        if (cannotBeImplemented(method)) {
+            return "";
+        }
+
         return String.join(
                 " ",
                 generateMethodDefinition(method),
@@ -94,16 +98,21 @@ public class Implementor implements Impler {
     }
 
     private String generateMethodDefinition(Method method) {
-        // :NOTE: private return type and method params
+        // :fixed: private return type and method params
         return String.join(
                 " ",
                 Modifier.toString(validateModifies(method.getModifiers())),
-                method.getReturnType().getTypeName(),
+                method.getReturnType().getCanonicalName(),
                 method.getName() + "(" + getMethodsParams(method) + ")",
                 // :fixed: add exceptions
                 generateThrows(method),
                 "{"
         );
+    }
+
+    private boolean cannotBeImplemented(Method method) {
+        return Modifier.isPrivate(method.getModifiers()) || Modifier.isStatic(method.getModifiers()) ||
+                method.isDefault();
     }
 
     private String generateThrows(Method method) {
@@ -155,3 +164,4 @@ public class Implementor implements Impler {
         return "";
     }
 }
+
