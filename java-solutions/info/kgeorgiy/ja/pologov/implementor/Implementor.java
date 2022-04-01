@@ -106,7 +106,9 @@ public class Implementor implements JarImpler, Impler {
         }
 
         try (final BufferedWriter bufferedWriter = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-            bufferedWriter.write(generateCode(token));
+            for (char c : generateCode(token).toCharArray()) {
+                bufferedWriter.write(c < 128 ? String.valueOf(c) : String.format("\\u%04x", (int) c));
+            }
         } catch (IOException e) {
             throw new ImplerException("Error: can't open class for writing");
         }
@@ -354,7 +356,7 @@ public class Implementor implements JarImpler, Impler {
      */
     private void compile(Class<?> token, Path compilePath, Path path) throws ImplerException {
         final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        final String[] args = {"-cp", compilePath.toString(), "-encoding", "UTF8",getPath(token, path, "Impl.java").toString()};
+        final String[] args = {"-cp", compilePath.toString(), "-encoding", "UTF8" ,getPath(token, path, "Impl.java").toString()};
 
         final int exitCode = compiler.run(null, null, null, args);
         if (exitCode != 0) {
