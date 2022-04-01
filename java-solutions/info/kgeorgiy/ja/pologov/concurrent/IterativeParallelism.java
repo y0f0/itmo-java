@@ -14,7 +14,8 @@ import java.util.stream.Stream;
  * @author Nikita Pologov (nikita.pologov1@gmail.com)
  * @see ScalarIP
  */
-public class ScalarIPImpl implements ScalarIP {
+// :NOTE: Было неверное имя класса
+public class IterativeParallelism implements ScalarIP {
     /**
      * Returns maximum value.
      *
