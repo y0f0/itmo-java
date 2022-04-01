@@ -7,6 +7,7 @@ javac "$IMPLEMENTOR" "$MODULES_PATH"/ImplerException.java "$MODULES_PATH"/JarImp
 echo "Manifest-Version: 1.0
       Created-By: Pologov Nikita
       Main-Class: info.kgeorgiy.ja.pologov.implementor.Implementor
+      Class-Path: java-advanced-2022\artifacts\info.kgeorgiy.java.advanced.implementor.Implementor
 " > manifest.fm
 jar cmf manifest.fm Implementor.jar ../implementor/Implementor.class
 #jar -cf ../scripts/Implementor.jar "$IMPLEMENTOR"
