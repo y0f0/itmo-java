@@ -28,7 +28,8 @@ public class IterativeParallelism implements ScalarIP {
      * @throws java.util.NoSuchElementException if no values are given.
      */
     @Override
-    public <T> T maximum(int threads, List<? extends T> values, Comparator<? super T> comparator) throws InterruptedException {
+    public <T> T maximum(final int threads, final List<? extends T> values, final Comparator<? super T> comparator) throws InterruptedException {
+        // :NOTE: Дубль
         return applyParalleling(threads, values, stream -> stream.max(comparator).orElseThrow(), stream -> stream.max(comparator).orElseThrow());
     }
 
@@ -44,7 +45,7 @@ public class IterativeParallelism implements ScalarIP {
      * @throws java.util.NoSuchElementException if no values are given.
      */
     @Override
-    public <T> T minimum(int threads, List<? extends T> values, Comparator<? super T> comparator) throws InterruptedException {
+    public <T> T minimum(final int threads, final List<? extends T> values, final Comparator<? super T> comparator) throws InterruptedException {
         return applyParalleling(threads, values, stream -> stream.min(comparator).orElseThrow(), stream -> stream.min(comparator).orElseThrow());
     }
 
@@ -59,7 +60,8 @@ public class IterativeParallelism implements ScalarIP {
      * @throws InterruptedException if executing thread was interrupted.
      */
     @Override
-    public <T> boolean all(int threads, List<? extends T> values, Predicate<? super T> predicate) throws InterruptedException {
+    public <T> boolean all(final int threads, final List<? extends T> values, final Predicate<? super T> predicate) throws InterruptedException {
+        // :NOTE: Дубль
         return applyParalleling(threads, values, stream -> stream.allMatch(predicate), stream -> stream.allMatch(b -> b == Boolean.TRUE));
     }
 
@@ -74,7 +76,7 @@ public class IterativeParallelism implements ScalarIP {
      * @throws InterruptedException if executing thread was interrupted.
      */
     @Override
-    public <T> boolean any(int threads, List<? extends T> values, Predicate<? super T> predicate) throws InterruptedException {
+    public <T> boolean any(final int threads, final List<? extends T> values, final Predicate<? super T> predicate) throws InterruptedException {
         return applyParalleling(threads, values, stream -> stream.anyMatch(predicate), stream -> stream.anyMatch(b -> b == Boolean.TRUE));
     }
 
@@ -90,18 +92,20 @@ public class IterativeParallelism implements ScalarIP {
      * @return result of function for values
      * @throws InterruptedException if at least one thread is interrupted
      */
-    private <T, U> U applyParalleling(int threads, List<? extends T> values, final Function<Stream<? extends T>, U> function,
+    private <T, U> U applyParalleling(int threads, final List<? extends T> values, final Function<Stream<? extends T>, U> function,
                                       final Function<Stream<? extends U>, U> collectPartitions) throws InterruptedException {
+        // :NOTE: Пустые списки
         threads = Math.min(threads, values.size());
-        int part = values.size() / threads;
+        final int part = values.size() / threads;
         int remainder = values.size() % threads;
 
-        List<Thread> workers = new ArrayList<>();
-        List<U> resultsOfApplyingFunctionsToParts = new ArrayList<>(Collections.nCopies(threads, null));
+        final List<Thread> workers = new ArrayList<>();
+        final List<U> resultsOfApplyingFunctionsToParts = new ArrayList<>(Collections.nCopies(threads, null));
 
+        // :NOTE: IntStream
         int right = 0;
         for (int i = 0; i < threads; i++) {
-            int left = right;
+            final int left = right;
             right += part;
             if (remainder - 1 >= 0) {
                 remainder--;
@@ -109,7 +113,7 @@ public class IterativeParallelism implements ScalarIP {
             }
             final int finalRight = right;
             final int finalI = i;
-            Thread worker = new Thread(() ->
+            final Thread worker = new Thread(() ->
                     resultsOfApplyingFunctionsToParts.set(
                             finalI,
                             function.apply(values.subList(left, finalRight).stream())));
@@ -117,7 +121,8 @@ public class IterativeParallelism implements ScalarIP {
             workers.add(worker);
         }
 
-        for (Thread worker : workers) {
+        for (final Thread worker : workers) {
+            // :NOTE: Утечка потоков
             worker.join();
         }
 
