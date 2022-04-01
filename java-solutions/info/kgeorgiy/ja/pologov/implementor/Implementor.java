@@ -4,6 +4,7 @@ import info.kgeorgiy.java.advanced.implementor.Impler;
 import info.kgeorgiy.java.advanced.implementor.ImplerException;
 import info.kgeorgiy.java.advanced.implementor.JarImpler;
 
+import java.nio.charset.Charset;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.io.BufferedWriter;
@@ -353,7 +354,7 @@ public class Implementor implements JarImpler, Impler {
      */
     private void compile(Class<?> token, Path compilePath, Path path) throws ImplerException {
         final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        final String[] args = {"-cp", compilePath.toString(), getPath(token, path, "Impl.java").toString()};
+        final String[] args = {"-cp", compilePath.toString(), "-encoding", "UTF8",getPath(token, path, "Impl.java").toString()};
 
         final int exitCode = compiler.run(null, null, null, args);
         if (exitCode != 0) {
