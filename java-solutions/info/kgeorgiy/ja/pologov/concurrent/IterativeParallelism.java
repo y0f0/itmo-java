@@ -131,9 +131,21 @@ public class IterativeParallelism implements ScalarIP {
             workers.add(worker);
         }
 
+        InterruptedException suppressedException = null;
         for (final Thread worker : workers) {
-            // :NOTE: Утечка потоков
-            worker.join();
+            // :fixed: Утечка потоков
+            try {
+                worker.join();
+            } catch (InterruptedException ie) {
+                if (suppressedException == null) {
+                    suppressedException = ie;
+                } else {
+                    suppressedException.addSuppressed(ie);
+                }
+            }
+        }
+        if (suppressedException != null) {
+            throw suppressedException;
         }
 
         return collectPartitions.apply(resultsOfApplyingFunctionsToParts.stream());
