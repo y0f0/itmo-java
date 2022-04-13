@@ -114,7 +114,7 @@ public class IterativeParallelism implements ScalarIP {
         final List<Thread> workers = new ArrayList<>();
         final List<U> resultsOfApplyingFunctionsToParts = new ArrayList<>(Collections.nCopies(threads, null));
 
-        // :NOTE: IntStream
+        // :fixed: IntStream
         int right = 0;
         for (int i = 0; i < threads; i++) {
             final int left = right;
@@ -123,12 +123,10 @@ public class IterativeParallelism implements ScalarIP {
                 remainder--;
                 right++;
             }
-            final int finalRight = right;
             final int finalI = i;
+            var sublist = values.subList(left, right).stream();
             final Thread worker = new Thread(() ->
-                    resultsOfApplyingFunctionsToParts.set(
-                            finalI,
-                            function.apply(values.subList(left, finalRight).stream())));
+                    resultsOfApplyingFunctionsToParts.set(finalI, function.apply(sublist)));
             worker.start();
             workers.add(worker);
         }
