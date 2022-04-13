@@ -29,8 +29,9 @@ public class IterativeParallelism implements ScalarIP {
      */
     @Override
     public <T> T maximum(final int threads, final List<? extends T> values, final Comparator<? super T> comparator) throws InterruptedException {
-        // :NOTE: Дубль
-        return applyParalleling(threads, values, stream -> stream.max(comparator).orElseThrow(), stream -> stream.max(comparator).orElseThrow());
+        // :fixed: Дубль
+        Function<Stream<? extends T>, T> func = stream -> stream.max(comparator).orElseThrow();
+        return applyParalleling(threads, values, func, func);
     }
 
     /**
@@ -46,7 +47,8 @@ public class IterativeParallelism implements ScalarIP {
      */
     @Override
     public <T> T minimum(final int threads, final List<? extends T> values, final Comparator<? super T> comparator) throws InterruptedException {
-        return applyParalleling(threads, values, stream -> stream.min(comparator).orElseThrow(), stream -> stream.min(comparator).orElseThrow());
+        Function<Stream<? extends T>, T> func = stream -> stream.min(comparator).orElseThrow();
+        return applyParalleling(threads, values, func, func);
     }
 
     /**
@@ -61,8 +63,12 @@ public class IterativeParallelism implements ScalarIP {
      */
     @Override
     public <T> boolean all(final int threads, final List<? extends T> values, final Predicate<? super T> predicate) throws InterruptedException {
-        // :NOTE: Дубль
-        return applyParalleling(threads, values, stream -> stream.allMatch(predicate), stream -> stream.allMatch(b -> b == Boolean.TRUE));
+        // :fixed: Дубль
+        return applyParalleling(threads, values, getStreamBooleanFunction(predicate), getStreamBooleanFunction(b -> b == Boolean.TRUE));
+    }
+
+    private <T> Function<Stream<? extends T>, Boolean> getStreamBooleanFunction(Predicate<? super T> predicate) {
+        return stream -> stream.allMatch(predicate);
     }
 
     /**
