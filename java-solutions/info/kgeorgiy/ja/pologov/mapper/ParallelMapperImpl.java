@@ -15,7 +15,7 @@ public class ParallelMapperImpl implements ParallelMapper {
         workers = new ArrayList<>();
         queue = new BlockingQueue();
 
-        for (int _unused = 0; _unused < threadsCount; _unused++) {
+        for (int unused = 0; unused < threadsCount; unused++) {
 
             Thread worker = new Thread(() -> {
                 while (true) {
