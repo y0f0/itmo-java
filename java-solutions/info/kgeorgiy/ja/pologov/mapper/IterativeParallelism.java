@@ -4,7 +4,7 @@ import info.kgeorgiy.java.advanced.concurrent.ScalarIP;
 import info.kgeorgiy.java.advanced.mapper.ParallelMapper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
@@ -107,6 +107,47 @@ public class IterativeParallelism implements ScalarIP {
      */
     private <T, U> U applyParalleling(int threads, final List<? extends T> values, final Function<Stream<? extends T>, U> function,
                                       final Function<Stream<? extends U>, U> collectPartitions) throws InterruptedException {
+        final List<Stream<? extends T>> sublist = getSublist(threads, values);
+        if (mapper == null) {
+            return iterativeParallelism(threads, values, function, collectPartitions, sublist);
+        } else {
+            return collectPartitions.apply(mapper.map(function, sublist).stream());
+        }
+    }
+
+    private <U, T> U iterativeParallelism(int threads, List<? extends T> values, Function<Stream<? extends T>, U> function,
+                                          Function<Stream<? extends U>, U> collectPartitions, List<Stream<? extends T>> sublist) throws InterruptedException {
+        final List<Thread> workers = new ArrayList<>();
+        final List<U> resultsOfApplyingFunctionsToParts = new ArrayList<>(Collections.nCopies(threads, null));
+        for (int i = 0; i < threads; i++) {
+            final int finalI = i;
+            final Thread worker = new Thread(() ->
+                    resultsOfApplyingFunctionsToParts.set(finalI, function.apply(sublist.get(finalI))));
+            worker.start();
+            workers.add(worker);
+        }
+
+        InterruptedException suppressedException = null;
+        for (final Thread worker : workers) {
+            // :fixed: Утечка потоков
+            try {
+                worker.join();
+            } catch (InterruptedException ie) {
+                if (suppressedException == null) {
+                    suppressedException = ie;
+                } else {
+                    suppressedException.addSuppressed(ie);
+                }
+            }
+        }
+        if (suppressedException != null) {
+            throw suppressedException;
+        }
+
+        return collectPartitions.apply(resultsOfApplyingFunctionsToParts.stream());
+    }
+
+    private <T> List<Stream<? extends T>> getSublist(int threads, List<? extends T> values) {
         // :fixed: Пустые списки
         if (values == null) {
             throw new IllegalArgumentException("Error: value is null.");
@@ -132,6 +173,6 @@ public class IterativeParallelism implements ScalarIP {
             var sublist = values.subList(left, right).stream();
             sublists.add(sublist);
         }
-        return collectPartitions.apply(mapper.map(function, sublists).stream());
+        return sublists;
     }
 }
