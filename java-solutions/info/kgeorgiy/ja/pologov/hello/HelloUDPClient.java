@@ -63,9 +63,9 @@ public class HelloUDPClient implements HelloClient {
             throws SocketException {
         String sent = prefix + threadId + "_" + request;
 
-        // :NOTE: вынести в переменную socket.getReceiveBufferSize()
-        DatagramPacket receivePacket = new DatagramPacket(new byte[socket.getReceiveBufferSize()],
-                socket.getReceiveBufferSize(), address);
+        // :fixed: вынести в переменную socket.getReceiveBufferSize()
+        int bufferSize = socket.getReceiveBufferSize();
+        DatagramPacket receivePacket = new DatagramPacket(new byte[bufferSize], bufferSize, address);
         DatagramPacket sendPacket = new DatagramPacket(sent.getBytes(StandardCharsets.UTF_8), sent.length(), address);
 
         // :NOTE: вынести в константу

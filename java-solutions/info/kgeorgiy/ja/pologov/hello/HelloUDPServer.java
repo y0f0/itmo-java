@@ -39,8 +39,8 @@ public class HelloUDPServer implements HelloServer {
     }
 
     private void handler() throws IOException {
-        DatagramPacket receivePacket = new DatagramPacket(new byte[socket.getReceiveBufferSize()],
-                socket.getReceiveBufferSize());
+        int bufferSize = socket.getReceiveBufferSize();
+        DatagramPacket receivePacket = new DatagramPacket(new byte[bufferSize], bufferSize);
         socket.receive(receivePacket);
         String received = new String(receivePacket.getData(), receivePacket.getOffset(),
                 receivePacket.getLength(), StandardCharsets.UTF_8);
