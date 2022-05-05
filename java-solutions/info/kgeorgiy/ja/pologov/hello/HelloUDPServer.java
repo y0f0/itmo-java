@@ -9,26 +9,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class HelloUDPServer implements HelloServer {
-    public static void main(String[] args) {
-        if (args == null || args.length != 2) {
-            System.err.println("error: args length is not correct");
-        }
-        assert args != null;
-        // :NOTE: в константы
-        int port = 1701;
-        int threads = 1;
-        try {
-            port = Integer.parseInt(args[0]);
-            threads = Integer.parseInt(args[1]);
-        } catch (NumberFormatException e) {
-            System.err.println("error: args is not correct");
-        }
-
-        try (HelloUDPServer server = new HelloUDPServer()) {
-            server.start(port, threads);
-        }
-    }
-
     private DatagramSocket socket;
     private ExecutorService pool;
 
@@ -78,5 +58,28 @@ public class HelloUDPServer implements HelloServer {
     public void close() {
         socket.close();
         Utils.shutdownAndAwaitTermination(pool);
+    }
+
+    private static final int DEFAULT_THREADS = 1;
+    private static final int DEFAULT_PORT = 8080;
+
+    public static void main(String[] args) {
+        if (args == null || args.length != 2) {
+            System.err.println("error: args length is not correct");
+        }
+        assert args != null;
+        // :fixed: в константы
+        int port = DEFAULT_PORT;
+        int threads = DEFAULT_THREADS;
+        try {
+            port = Integer.parseInt(args[0]);
+            threads = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            System.err.println("error: args is not correct");
+        }
+
+        try (HelloUDPServer server = new HelloUDPServer()) {
+            server.start(port, threads);
+        }
     }
 }
