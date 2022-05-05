@@ -67,7 +67,7 @@ public class HelloUDPClient implements HelloClient {
                 socket.getReceiveBufferSize(), address);
         DatagramPacket sendPacket = new DatagramPacket(sent.getBytes(StandardCharsets.UTF_8), sent.length(), address);
 
-        socket.setSoTimeout(1);
+        socket.setSoTimeout(500);
         String received;
         do {
             try {
