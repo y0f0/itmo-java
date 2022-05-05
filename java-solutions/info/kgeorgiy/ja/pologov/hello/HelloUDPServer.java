@@ -14,6 +14,7 @@ public class HelloUDPServer implements HelloServer {
             System.err.println("error: args length is not correct");
         }
         assert args != null;
+        // :NOTE: в константы
         int port = 1701;
         int threads = 1;
         try {
