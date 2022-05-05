@@ -68,8 +68,9 @@ public class HelloUDPClient implements HelloClient {
         DatagramPacket receivePacket = new DatagramPacket(new byte[bufferSize], bufferSize, address);
         DatagramPacket sendPacket = new DatagramPacket(sent.getBytes(StandardCharsets.UTF_8), sent.length(), address);
 
-        // :NOTE: вынести в константу
-        socket.setSoTimeout(500);
+        // :fixed: вынести в константу
+        int TIMEOUT = 500;
+        socket.setSoTimeout(TIMEOUT);
         String received;
         do {
             try {
