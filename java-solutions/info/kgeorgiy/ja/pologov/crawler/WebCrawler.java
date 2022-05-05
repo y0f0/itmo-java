@@ -1,7 +1,5 @@
 package info.kgeorgiy.ja.pologov.crawler;
 
-import info.kgeorgiy.ja.pologov.hello.HelloUDPClient;
-import info.kgeorgiy.ja.pologov.hello.Utils;
 import info.kgeorgiy.java.advanced.crawler.*;
 
 import java.io.IOException;

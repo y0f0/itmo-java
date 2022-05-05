@@ -1,4 +1,4 @@
-package info.kgeorgiy.ja.pologov.hello;
+package info.kgeorgiy.ja.pologov.crawler;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
