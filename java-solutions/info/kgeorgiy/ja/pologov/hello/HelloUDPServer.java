@@ -77,6 +77,6 @@ public class HelloUDPServer implements HelloServer {
     @Override
     public void close() {
         socket.close();
-        HelloUDPClient.shutdownAndAwaitTermination(pool);
+        Utils.shutdownAndAwaitTermination(pool);
     }
 }
