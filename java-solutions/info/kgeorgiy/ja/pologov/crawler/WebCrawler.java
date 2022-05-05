@@ -1,5 +1,6 @@
 package info.kgeorgiy.ja.pologov.crawler;
 
+import info.kgeorgiy.ja.pologov.hello.HelloUDPClient;
 import info.kgeorgiy.java.advanced.crawler.*;
 
 import java.io.IOException;
@@ -185,20 +186,6 @@ public class WebCrawler implements Crawler {
     }
 
     void shutdownAndAwaitTermination(ExecutorService pool) { //from javadoc
-        pool.shutdown(); // Disable new tasks from being submitted
-        try {
-            // Wait a while for existing tasks to terminate
-            if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
-                pool.shutdownNow(); // Cancel currently executing tasks
-                // Wait a while for tasks to respond to being cancelled
-                if (!pool.awaitTermination(60, TimeUnit.SECONDS))
-                    System.err.println("Pool did not terminate");
-            }
-        } catch (InterruptedException ie) {
-            // (Re-)Cancel if current thread also interrupted
-            pool.shutdownNow();
-            // Preserve interrupt status
-            Thread.currentThread().interrupt();
-        }
+        HelloUDPClient.shutdownAndAwaitTermination(pool);
     }
 }
