@@ -78,7 +78,7 @@ public class HelloUDPClient implements HelloClient {
             }
             received = new String(receivePacket.getData(), receivePacket.getOffset(), receivePacket.getLength(),
                     StandardCharsets.UTF_8);
-        } while (!received.equals("Hello, " + sent));
+        } while (!received.contains("Hello, " + sent));
     }
 
     /**
