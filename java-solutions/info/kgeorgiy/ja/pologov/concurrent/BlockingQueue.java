@@ -1,4 +1,4 @@
-package info.kgeorgiy.ja.pologov.mapper;
+package info.kgeorgiy.ja.pologov.concurrent;
 
 import java.util.ArrayDeque;
 import java.util.Queue;

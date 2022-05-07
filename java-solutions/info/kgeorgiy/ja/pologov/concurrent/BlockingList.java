@@ -1,4 +1,4 @@
-package info.kgeorgiy.ja.pologov.mapper;
+package info.kgeorgiy.ja.pologov.concurrent;
 
 import java.util.ArrayList;
 import java.util.List;

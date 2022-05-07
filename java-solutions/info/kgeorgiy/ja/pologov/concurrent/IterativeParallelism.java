@@ -1,6 +1,7 @@
 package info.kgeorgiy.ja.pologov.concurrent;
 
 import info.kgeorgiy.java.advanced.concurrent.ScalarIP;
+import info.kgeorgiy.java.advanced.mapper.ParallelMapper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +17,14 @@ import java.util.stream.Stream;
  */
 // :fixed: Было неверное имя класса
 public class IterativeParallelism implements ScalarIP {
+    private final ParallelMapper mapper;
+    public IterativeParallelism() {
+        mapper = null;
+    }
+    public IterativeParallelism(ParallelMapper mapper) {
+        this.mapper = mapper;
+    }
+
     /**
      * Returns maximum value.
      *
@@ -100,33 +109,22 @@ public class IterativeParallelism implements ScalarIP {
      */
     private <T, U> U applyParalleling(int threads, final List<? extends T> values, final Function<Stream<? extends T>, U> function,
                                       final Function<Stream<? extends U>, U> collectPartitions) throws InterruptedException {
-        // :fixed: Пустые списки
-        if (values == null)  {
-            throw new IllegalArgumentException("Error: value is null.");
+        final List<Stream<? extends T>> sublist = getSublist(threads, values);
+        if (mapper == null) {
+            return iterativeParallelism(threads, values, function, collectPartitions, sublist);
+        } else {
+            return collectPartitions.apply(mapper.map(function, sublist).stream());
         }
-        if (values.isEmpty())  {
-            throw new IllegalArgumentException("Error: value is empty.");
-        }
-        threads = Math.min(threads, values.size());
-        final int part = values.size() / threads;
-        int remainder = values.size() % threads;
+    }
 
+    private <U, T> U iterativeParallelism(int threads, List<? extends T> values, Function<Stream<? extends T>, U> function,
+                                          Function<Stream<? extends U>, U> collectPartitions, List<Stream<? extends T>> sublist) throws InterruptedException {
         final List<Thread> workers = new ArrayList<>();
         final List<U> resultsOfApplyingFunctionsToParts = new ArrayList<>(Collections.nCopies(threads, null));
-
-        // :fixed: IntStream
-        int right = 0;
         for (int i = 0; i < threads; i++) {
-            final int left = right;
-            right += part;
-            if (remainder - 1 >= 0) {
-                remainder--;
-                right++;
-            }
             final int finalI = i;
-            var sublist = values.subList(left, right).stream();
             final Thread worker = new Thread(() ->
-                    resultsOfApplyingFunctionsToParts.set(finalI, function.apply(sublist)));
+                    resultsOfApplyingFunctionsToParts.set(finalI, function.apply(sublist.get(finalI))));
             worker.start();
             workers.add(worker);
         }
@@ -149,5 +147,34 @@ public class IterativeParallelism implements ScalarIP {
         }
 
         return collectPartitions.apply(resultsOfApplyingFunctionsToParts.stream());
+    }
+
+    private <T> List<Stream<? extends T>> getSublist(int threads, List<? extends T> values) {
+        // :fixed: Пустые списки
+        if (values == null) {
+            throw new IllegalArgumentException("Error: value is null.");
+        }
+        if (values.isEmpty()) {
+            throw new IllegalArgumentException("Error: value is empty.");
+        }
+        threads = Math.min(threads, values.size());
+        final int part = values.size() / threads;
+        int remainder = values.size() % threads;
+
+        final List<Stream<? extends T>> sublists = new ArrayList<>();
+
+        // :fixed: IntStream
+        int right = 0;
+        for (int i = 0; i < threads; i++) {
+            final int left = right;
+            right += part;
+            if (remainder - 1 >= 0) {
+                remainder--;
+                right++;
+            }
+            var sublist = values.subList(left, right).stream();
+            sublists.add(sublist);
+        }
+        return sublists;
     }
 }

@@ -1,4 +1,4 @@
-package info.kgeorgiy.ja.pologov.mapper;
+package info.kgeorgiy.ja.pologov.concurrent;
 
 import info.kgeorgiy.java.advanced.mapper.ParallelMapper;
 
