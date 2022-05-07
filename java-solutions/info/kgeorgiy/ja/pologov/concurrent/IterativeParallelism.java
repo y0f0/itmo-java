@@ -109,6 +109,7 @@ public class IterativeParallelism implements ScalarIP {
      */
     private <T, U> U applyParalleling(int threads, final List<? extends T> values, final Function<Stream<? extends T>, U> function,
                                       final Function<Stream<? extends U>, U> collectPartitions) throws InterruptedException {
+        threads = Math.min(threads, values.size());
         final List<Stream<? extends T>> sublist = getSublist(threads, values);
         if (mapper == null) {
             return iterativeParallelism(threads, values, function, collectPartitions, sublist);
@@ -157,7 +158,6 @@ public class IterativeParallelism implements ScalarIP {
         if (values.isEmpty()) {
             throw new IllegalArgumentException("Error: value is empty.");
         }
-        threads = Math.min(threads, values.size());
         final int part = values.size() / threads;
         int remainder = values.size() % threads;
 
