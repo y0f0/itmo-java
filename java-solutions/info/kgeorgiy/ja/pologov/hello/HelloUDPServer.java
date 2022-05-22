@@ -30,8 +30,10 @@ public class HelloUDPServer implements HelloServer {
         for (int i = 0; i < threads; i++) {
             pool.submit(() -> {
                 try {
+                    int bufferSize = socket.getReceiveBufferSize();
+                    DatagramPacket receivePacket = new DatagramPacket(new byte[bufferSize], bufferSize);
                     while (!socket.isClosed()) {
-                        handler();
+                        handler(receivePacket);
                     }
                 } catch (IOException ignored) {
                 }
@@ -39,9 +41,7 @@ public class HelloUDPServer implements HelloServer {
         }
     }
 
-    private void handler() throws IOException {
-        int bufferSize = socket.getReceiveBufferSize();
-        DatagramPacket receivePacket = new DatagramPacket(new byte[bufferSize], bufferSize);
+    private void handler(DatagramPacket receivePacket) throws IOException {
         socket.receive(receivePacket);
         String received = new String(receivePacket.getData(), receivePacket.getOffset(),
                 receivePacket.getLength(), StandardCharsets.UTF_8);
