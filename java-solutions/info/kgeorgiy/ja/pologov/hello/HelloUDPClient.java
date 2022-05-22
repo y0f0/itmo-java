@@ -37,7 +37,7 @@ public class HelloUDPClient implements HelloClient {
      * @param port     server port
      * @param prefix   request prefix
      * @param threads  number of request threads
-     * @param requests number of requests per thread.
+     * @param requests number of requests per thread
      */
     @Override
     public void run(String host, int port, String prefix, int threads, int requests) {
